@@ -1068,7 +1068,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		5F139A452EC5A1FD0092EDA6 /* XCRemoteSwiftPackageReference "NSJSONSerialization-for-Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/NSJSONSerialization-for-Swift";
+			repositoryURL = "https://github.com/j-w-i/NSJSONSerialization-for-Swift";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -1076,7 +1076,7 @@
 		};
 		5F57B8BF2E9EEAE000CA2CE2 /* XCRemoteSwiftPackageReference "ModernSDKKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/ModernSDKKit";
+			repositoryURL = "https://github.com/j-w-i/ModernSDKKit";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -1084,7 +1084,7 @@
 		};
 		5F5AF8A42EC718B600D0C660 /* XCRemoteSwiftPackageReference "FoundationExtensions" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/FoundationExtensions";
+			repositoryURL = "https://github.com/j-w-i/FoundationExtensions";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -1092,7 +1092,7 @@
 		};
 		5F5AF8A72EC7FA0600D0C660 /* XCRemoteSwiftPackageReference "DeprecatedAPIKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/DeprecatedAPIKit";
+			repositoryURL = "https://github.com/j-w-i/DeprecatedAPIKit";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -1100,7 +1100,7 @@
 		};
 		5F9395082EE3DC9300977D7A /* XCRemoteSwiftPackageReference "ETFKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/ETFKit";
+			repositoryURL = "https://github.com/j-w-i/ETFKit";
 			requirement = {
 				branch = main;
 				kind = branch;
@@ -1108,7 +1108,7 @@
 		};
 		5FE178342EAF17D000FC4AA4 /* XCRemoteSwiftPackageReference "TSMarkdownParser" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/TSMarkdownParser.git";
+			repositoryURL = "https://github.com/j-w-i/TSMarkdownParser.git";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -1116,7 +1116,7 @@
 		};
 		5FEF14602EA0CF1A005598D3 /* XCRemoteSwiftPackageReference "UIKitExtensions" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JWIMaster/UIKitExtensions.git";
+			repositoryURL = "https://github.com/j-w-i/UIKitExtensions.git";
 			requirement = {
 				branch = master;
 				kind = branch;
