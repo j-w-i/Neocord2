@@ -24,22 +24,17 @@ class Bucket {
     }
     
     private func processQueue(for itemGeneration: Int) {
+        // A stale callback owns neither the current capacity nor queued work.
+        guard itemGeneration == generation else { return }
         guard !queueItems.isEmpty else { return }
         guard counter < limit else { return }
-        
-        let currentGeneration = generation
-        if currentGeneration != itemGeneration {
-            // This item is from an old generation, skip it
-            queueItems.removeFirst()
-            processQueue(for: itemGeneration) // continue with next item
-            return
-        }
         
         counter += 1
         let item = queueItems.removeFirst()
         item.perform()
         
         queue.asyncAfter(deadline: .now() + interval) {
+            guard itemGeneration == self.generation else { return }
             self.counter -= 1
             self.processQueue(for: itemGeneration)
         }

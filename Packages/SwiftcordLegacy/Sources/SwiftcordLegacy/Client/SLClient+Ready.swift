@@ -13,7 +13,10 @@ extension SLClient {
         // Run all parsing on a background queue
         DispatchQueue.global(priority: .high).async {
             self.logger.log("Parsing READY payload")
-            self.gateway?.sessionId = data["session_id"] as? String
+            // Gateway captures the session ID synchronously from its validated
+            // originating socket. Do not write through self.gateway here: this
+            // asynchronous parse may outlive that gateway and overwrite a new
+            // connection's resume state.
             
             // --- Begin heavy parsing ---
             if let userData = data["user"] as? [String: Any] {
