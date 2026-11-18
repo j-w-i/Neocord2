@@ -70,7 +70,9 @@ class SidebarButtonCell: UICollectionViewCell {
         case .guild(let guild):
             GuildAvatarCache.shared.avatar(for: guild) { [weak self] image in
                 DispatchQueue.main.async {
-                    self?.imageView.image = image ?? UIImage(named: "defaultavatar")
+                    // The cell may have been reused (e.g. for the DMs icon) while the icon loaded.
+                    guard let self = self, self.type == type else { return }
+                    self.imageView.image = image ?? UIImage(named: "defaultavatar")
                 }
             }
         case let .folder(folder, _):
@@ -100,8 +102,9 @@ class SidebarButtonCell: UICollectionViewCell {
                 let folderImage = createImageGrid(from: Array(finalImages.prefix(4)), rows: 2, columns: 2, scale: 0.7, spacing: 8, padding: 30)
                 
                 DispatchQueue.main.async {
-                    self?.imageView.image = folderImage
-                    self?.backgroundColorView.backgroundColor = folder.color?.withAlphaComponent(0.4) ?? .clear
+                    guard let self = self, self.type == type else { return }
+                    self.imageView.image = folderImage
+                    self.backgroundColorView.backgroundColor = folder.color?.withAlphaComponent(0.4) ?? .clear
                 }
             }
 

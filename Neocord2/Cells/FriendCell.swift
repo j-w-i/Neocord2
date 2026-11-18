@@ -7,7 +7,11 @@ import SFSymbolsCompatKit
 class FriendCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     
     static let reuseID = "FriendCell"
-    
+
+    /// Avatars already resized to the cell's 40x40, keyed by user and avatar hash. Resizing on every configure
+    /// kept a background thread busy while scrolling, which on a single-core iPod takes the main thread's time.
+    private static let resizedAvatars = NSCache<NSString, UIImage>()
+
     private var friendAvatar: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
@@ -98,6 +102,7 @@ class FriendCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        removePresenceObserver()
         presenceColor = .offlineGray
         updatePresenceIndicatorColor()
         friendAvatar.image = nil
@@ -115,7 +120,16 @@ class FriendCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     private func updatePresenceIndicatorColor() {
         presenceIndicator.backgroundColor = presenceColor
     }
-    
+
+    /// Each configure registers a presence observer. Without this, every reuse left the previous one registered
+    /// and every PRESENCE_UPDATE ran one closure per cell ever configured.
+    private func removePresenceObserver() {
+        if let observer = presenceUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+            presenceUpdateObserver = nil
+        }
+    }
+
     func configure(with user: User) {
         self.friendName.text = user.nickname ?? user.displayname ?? user.username
         self.friend = user
@@ -123,7 +137,8 @@ class FriendCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         let presence = activeClient.presences[user.id!] ?? .offline
         presenceColor = PresenceColor.color(for: presence)
         updatePresenceIndicatorColor()
-        
+
+        removePresenceObserver()
         presenceUpdateObserver = NotificationCenter.default.addObserver(forName: .presenceUpdate, object: nil, queue: .main) { [weak self] notification in
             guard let self = self else { return }
             if let presenceDict = notification.object as? [Snowflake: PresenceType], let updatedPresence = presenceDict[user.id!] {
@@ -136,23 +151,35 @@ class FriendCell: UICollectionViewCell, UIGestureRecognizerDelegate {
             }
         }
         
+        let resizedKey = "\(String(describing: user.id))-\(user.avatarString ?? "default")" as NSString
+        if let cached = FriendCell.resizedAvatars.object(forKey: resizedKey) {
+            friendAvatar.image = cached
+            return
+        }
+
         AvatarCache.shared.avatar(for: user) { [weak self] image, color in
-            
+
             DispatchQueue.global(qos: .userInitiated).async {
-                
+
                 guard let self = self else { return }
-                
+
                 if let image = image, let color = color {
                     let resized = image.resizeImage(image, targetSize: CGSize(width: 40, height: 40))
-                    
+                    FriendCell.resizedAvatars.setObject(resized, forKey: resizedKey)
+
                     DispatchQueue.main.async {
-                        self.friendAvatar.image = resized
+                        // The cell may have been reused for someone else while this ran.
+                        if self.friend?.id == user.id {
+                            self.friendAvatar.image = resized
+                        }
                     }
                 } else {
                     let defaultPFP = UIImage(named: "defaultavatar")!
                     let resized = defaultPFP.resizeImage(defaultPFP, targetSize: .init(width: 40, height: 40))
                     DispatchQueue.main.async {
-                        self.friendAvatar.image = resized
+                        if self.friend?.id == user.id {
+                            self.friendAvatar.image = resized
+                        }
                     }
                 }
             }

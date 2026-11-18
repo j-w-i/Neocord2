@@ -160,6 +160,7 @@ class DMButtonCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        removePresenceObserver()
         presenceColor = .offlineGray
         updatePresenceIndicatorColor()
         dmAuthorAvatar.image = nil
@@ -170,7 +171,16 @@ class DMButtonCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     private func updatePresenceIndicatorColor() {
         presenceIndicator.backgroundColor = presenceColor
     }
-    
+
+    /// Each configure registers a presence observer. Without this, every reuse left the previous one registered
+    /// and every PRESENCE_UPDATE ran one closure per cell ever configured.
+    private func removePresenceObserver() {
+        if let observer = presenceUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+            presenceUpdateObserver = nil
+        }
+    }
+
     deinit {
         if let observer = self.presenceUpdateObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -193,7 +203,8 @@ class DMButtonCell: UICollectionViewCell, UIGestureRecognizerDelegate {
             let presence = activeClient.presences[currentRecipientID!] ?? .offline
             presenceColor = PresenceColor.color(for: presence)
             updatePresenceIndicatorColor()
-            
+
+            removePresenceObserver()
             presenceUpdateObserver = NotificationCenter.default.addObserver(forName: .presenceUpdate, object: nil, queue: .main) { [weak self] notification in
                 guard let self = self else { return }
                 if let presenceDict = notification.object as? [Snowflake: PresenceType], let updatedPresence = presenceDict[currentRecipientID!] {

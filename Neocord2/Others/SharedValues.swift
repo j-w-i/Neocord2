@@ -80,9 +80,9 @@ public class StringCache {
 }
 
 private var DeviceInfoClass = DeviceInfo()
-public var device: ChipsetClass {
-    return DeviceInfoClass.chipsetClass()
-}
+// The chipset never changes while the app runs. Computing it reflects over the 256-byte utsname.machine tuple
+// (~10 ms on an iPod touch 3), and it is read for every displayed cell, so it is computed once.
+public let device: ChipsetClass = DeviceInfoClass.chipsetClass()
 private var captureScale: CGFloat {
     switch device {
     case .a4:
